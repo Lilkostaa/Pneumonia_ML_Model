@@ -311,7 +311,7 @@ python EvaluateModel.py
 ### Test Set Performance (624 images)
 ![confusion matrix](examples/confusion_matrix.png)
 #### Confusion Matrix Analysis
-![evaluation_metrics](examples\evaluation_metrics.png)
+![evaluation_metrics](examples/evaluation_metrics.png)
 
 
 **Breakdown**:
