@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pneumonia Detection AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1em;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+        
+        .tab:hover {
+            color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Upload Area */
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+        
+        .upload-area:hover {
+            background: #eef1ff;
+            border-color: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        .upload-area.dragover {
+            background: #e3e7ff;
+            border-color: #764ba2;
+        }
+        
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        /* URL Input */
+        .url-input-group {
+            margin: 20px 0;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .url-hint {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result.pneumonia {
+            background: #fee;
+            border: 2px solid #f44;
+        }
+        
+        .result.normal {
+            background: #efe;
+            border: 2px solid #4f4;
+        }
+        
+        .result h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.8em;
+        }
+        
+        .confidence {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .result-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .preview-container {
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* Grad-CAM Container */
+        .gradcam-container {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .gradcam-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-top: 15px;
+        }
+        
+        .gradcam-title {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .gradcam-hint {
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+        /* Grad-CAM Image Wrapper */
+        .gradcam-image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .gradcam-image {
+            max-width: 100%;
+            max-height: 400px; /* Aumentato da default */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-top: 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gradcam-image:hover {
+            transform: scale(1.02);
+        }
+
+        .gradcam-click-hint {
+            color: #999;
+            font-size: 0.85em;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Download Button */
+        .download-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Modal per visualizzare l'immagine ingrandita */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: relative;
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 50px;
+            animation: zoomIn 0.3s;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #f1f1f1;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #bbb;
+        }
+
+        .modal-caption {
+            text-align: center;
+            color: #ccc;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+
+        .modal-download-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-download-btn:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Pneumonia Detection AI</h1>
+            <p class="subtitle">Upload an image or provide a URL for instant analysis</p>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('upload')">📤 Upload File</button>
+            <button class="tab" onclick="switchTab('url')">🔗 Image URL</button>
+        </div>
+        
+        <!-- Upload Tab -->
+        <div id="uploadTab" class="tab-content active">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📤</div>
+                    <p class="upload-text" id="uploadText">Click or drag to upload</p>
+                    <p class="upload-hint">Supported: JPG, JPEG, PNG (max 16MB)</p>
+                    <input type="file" id="fileInput" name="file" accept="image/*">
+                </div>
+                
+                <div class="preview-container" id="previewContainer">
+                    <img id="previewImage" class="preview-image" alt="Preview">
+                </div>
+                
+                <button type="submit" class="btn" id="uploadBtn">Analyze X-Ray</button>
+            </form>
+        </div>
+        
+        <!-- URL Tab -->
+        <div id="urlTab" class="tab-content">
+            <form id="urlForm">
+                <div class="url-input-group">
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        class="url-input" 
+                        placeholder="https://example.com/xray-image.jpg"
+                        required
+                    >
+                    <p class="url-hint">Enter a direct link to a chest X-ray image</p>
+                </div>
+                
+                <div class="preview-container" id="urlPreviewContainer">
+                    <img id="urlPreviewImage" class="preview-image" alt="Preview">
+                </div>
+                
+                <button type="submit" class="btn" id="urlBtn">Analyze X-Ray from URL</button>
+            </form>
+        </div>
+        
+        <div class="loader" id="loader"></div>
+        
+        <div class="result" id="result">
+            <div class="result-icon" id="resultIcon"></div>
+            <h2 id="diagnosis"></h2>
+            <p class="confidence" id="confidence"></p>
+            <p id="interpretation"></p>
+            
+            <!-- Grad-CAM Container -->
+            <div class="gradcam-container" id="gradcamContainer">
+                <p class="gradcam-title">🔍 AI Focus Areas</p>
+                
+                <!-- Clickable image -->
+                <div class="gradcam-image-wrapper">
+                    <img id="gradcamImage" class="gradcam-image" alt="Grad-CAM Visualization" onclick="openImageModal()">
+                    <p class="gradcam-click-hint">Click to enlarge</p>
+                </div>
+                
+                <p class="gradcam-hint">Red areas indicate regions of high importance for the diagnosis</p>
+                
+                <!-- Download button -->
+                <button class="download-btn" onclick="downloadGradcam()">
+                    📥 Download Grad-CAM Image
+                </button>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            ⚠️ <strong>Disclaimer:</strong> This is an AI model for educational purposes only. 
+            Always consult a medical professional for actual diagnosis.
+        </div>
+        
+        <div class="footer">
+            <p>Powered by VGG16 Transfer Learning | TensorFlow & Keras</p>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadForm = document.getElementById('uploadForm');
+        const urlForm = document.getElementById('urlForm');
+        const urlInput = document.getElementById('urlInput');
+        const uploadText = document.getElementById('uploadText');
+        const loader = document.getElementById('loader');
+        const result = document.getElementById('result');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const urlBtn = document.getElementById('urlBtn');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const urlPreviewContainer = document.getElementById('urlPreviewContainer');
+        const urlPreviewImage = document.getElementById('urlPreviewImage');
+
+        // Tab switching
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'upload') {
+                tabs[0].classList.add('active');
+                document.getElementById('uploadTab').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('urlTab').classList.add('active');
+            }
+            
+            result.style.display = 'none';
+        }
+
+        // Upload functionality
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                uploadText.textContent = '✅ ' + file.name;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // URL preview
+        urlInput.addEventListener('input', () => {
+            const url = urlInput.value.trim();
+            if (url && (url.match(/\.(jpeg|jpg|png)$/i) || url.includes('image'))) {
+                urlPreviewImage.src = url;
+                urlPreviewContainer.style.display = 'block';
+                urlPreviewImage.onerror = () => {
+                    urlPreviewContainer.style.display = 'none';
+                };
+            } else {
+                urlPreviewContainer.style.display = 'none';
+            }
+        });
+
+        // Upload form submission
+        uploadForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            await sendPrediction(formData, uploadBtn, 'Analyzing...');
+        });
+
+        // URL form submission
+        urlForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const url = urlInput.value.trim();
+            
+            await sendPrediction(
+                JSON.stringify({ url: url }),
+                urlBtn,
+                'Downloading & Analyzing...',
+                true
+            );
+        });
+
+        // Send prediction request
+        async function sendPrediction(data, button, loadingText, isJson = false) {
+            loader.style.display = 'block';
+            result.style.display = 'none';
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.textContent = loadingText;
+            
+            try {
+                const options = {
+                    method: 'POST',
+                    body: data
+                };
+                
+                if (isJson) {
+                    options.headers = { 'Content-Type': 'application/json' };
+                }
+                
+                const response = await fetch('/predict', options);
+                const responseData = await response.json();
+                
+                loader.style.display = 'none';
+                button.disabled = false;
+                button.textContent = originalText;
+                
+                if (response.ok) {
+                    showResult(responseData);
+                } else {
+                    alert('Error: ' + responseData.error);
+                }
+                
+            } catch (error) {
+                loader.style.display = 'none';
+                button.disabled = false;
+                button.textContent = originalText;
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Show result with Grad-CAM
+        function showResult(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result ' + data.diagnosis.toLowerCase();
+            
+            const icon = data.diagnosis === 'PNEUMONIA' ? '⚠️' : '✅';
+            const diagnosisText = data.diagnosis === 'PNEUMONIA' 
+                ? 'Pneumonia Detected' 
+                : 'Normal X-Ray';
+            
+            const interpretation = data.diagnosis === 'PNEUMONIA'
+                ? 'The model detected signs of pneumonia in this X-ray.'
+                : 'No signs of pneumonia detected in this X-ray.';
+            
+            document.getElementById('resultIcon').textContent = icon;
+            document.getElementById('diagnosis').textContent = diagnosisText;
+            document.getElementById('confidence').textContent = 
+                `Confidence: ${data.confidence}%`;
+            document.getElementById('interpretation').textContent = interpretation;
+            
+            // Show Grad-CAM if available
+            const gradcamContainer = document.getElementById('gradcamContainer');
+            if (data.gradcam_available && data.gradcam) {
+                const gradcamImage = document.getElementById('gradcamImage');
+                gradcamImage.src = 'data:image/png;base64,' + data.gradcam;
+                gradcamContainer.style.display = 'block';
+            } else {
+                gradcamContainer.style.display = 'none';
+            }
+        }
+        // Function to open modal with enlarged image
+        function openImageModal() {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const gradcamImg = document.getElementById('gradcamImage');
+            
+            if (!modal) {
+                createImageModal();
+            }
+            
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            
+            imageModal.style.display = 'block';
+            modalImage.src = gradcamImg.src;
+        }
+
+        // Create the modal dynamically
+        function createImageModal() {
+            const modal = document.createElement('div');
+            modal.id = 'imageModal';
+            modal.className = 'modal';
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeImageModal();
+                }
+            };
+            
+            modal.innerHTML = `
+                <span class="close-modal" onclick="closeImageModal()">&times;</span>
+                <img class="modal-content" id="modalImage">
+                <div class="modal-caption">
+                    <p>Grad-CAM Visualization - Click outside to close</p>
+                    <button class="modal-download-btn" onclick="downloadGradcam()">
+                        📥 Download Image
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                }
+            });
+        }
+
+        // Close the image modal
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Function to download the Grad-CAM image
+        function downloadGradcam() {
+            const gradcamImg = document.getElementById('gradcamImage');
+            const link = document.createElement('a');
+            
+            // Obtain timestamp for unique filename
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            link.download = `pneumonia-gradcam-${timestamp}.png`;
+            link.href = gradcamImg.src;
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Feedback to user
+            const originalText = event.target.textContent;
+            event.target.textContent = '✅ Downloaded!';
+            setTimeout(() => {
+                event.target.textContent = originalText;
+            }, 2000);
+        }
+
+    </script>
+</body>
+</html>

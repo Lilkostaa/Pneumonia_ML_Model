@@ -1,2 +1,223 @@
-.kaggle
+# ============================================
+# Pneumonia ML Model - .gitignore
+# GitHub Repository Configuration
+# ============================================
+
+# ============================================
+# KAGGLE & CREDENTIALS
+# ============================================
+.kaggle/
+kaggle/
+kaggle.json
+*.json
+
+# ============================================
+# PYTHON ENVIRONMENT
+# ============================================
 venv/
+env/
+ENV/
+.venv
+.virtualenv
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+*.pyo
+
+# ============================================
+# TRAINED MODELS (TOO LARGE - 500MB+)
+# ============================================
+# These files should be shared via Git LFS or external links
+*.h5
+*.keras
+*.weights.h5
+*.pb
+*.ckpt
+saved_model/
+checkpoints/
+best_*.h5
+pneumonia_*.h5
+
+# ============================================
+# DATASET & DATA FILES
+# ============================================
+chest_xray/
+data/
+dataset/
+*.csv
+*.zip
+*.tar.gz
+*.tar
+*.gz
+
+# Kaggle Dataset Cache
+~/.cache/kagglehub/
+
+# ============================================
+# RUNTIME GENERATED FILES
+# ============================================
+# Temporary uploads
+uploads/
+upload/
+temp/
+
+# Grad-CAM runtime results
+gradcam_results/
+latest_gradcam.png
+temp_url_image.jpg
+
+# Single predictions (keep examples/ folder)
+prediction_result.png
+!examples/prediction_result.png
+
+# ============================================
+# LOGS & HISTORY
+# ============================================
+*.log
+logs/
+training_history.json
+model_training.log
+
+# ============================================
+# JUPYTER NOTEBOOKS
+# ============================================
+.ipynb_checkpoints/
+*.ipynb
+Untitled*.ipynb
+
+# ============================================
+# IDE & EDITORS
+# ============================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Atom
+.atom/
+
+# ============================================
+# OPERATING SYSTEMS
+# ============================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================
+# TESTING & COVERAGE
+# ============================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+nosetests.xml
+
+# ============================================
+# DISTRIBUTION / PACKAGING
+# ============================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================
+# ENVIRONMENT VARIABLES
+# ============================================
+.env
+.env.local
+.env.*.local
+.flaskenv
+
+# ============================================
+# DOCUMENTATION BUILD
+# ============================================
+docs/_build/
+site/
+
+# ============================================
+# TEMPORARY FILES
+# ============================================
+*.tmp
+*.bak
+*.swp
+.~*
+*.autosave
+
+# ============================================
+# FLASK SPECIFIC
+# ============================================
+instance/
+.webassets-cache
+
+# ============================================
+# TENSORBOARD
+# ============================================
+runs/
+tb_logs/
+
+# ============================================
+# KEEP THESE (Override ignores)
+# ============================================
+# Keep example images for README
+!examples/*.png
+!examples/*.jpg
+!screenshot/*.png
+!screenshot/*.jpg
+
+# Keep template files
+!templates/**
