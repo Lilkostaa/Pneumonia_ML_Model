@@ -46,6 +46,7 @@ Each folder contains two subdirectories:
 - Validation set: 50% pneumonia, 50% normal
 
 ## 📁 Project Structure
+'''
 Pneumonia_ML_Model/
 │
 ├── DownloadDataSet.py # Script to download the Kaggle dataset
@@ -56,6 +57,7 @@ Pneumonia_ML_Model/
 ├── best_pneumonia_model.h5 # Best model checkpoint
 ├── pneumonia_detection_model.h5 # Final trained model
 └── training_history.png # Training/validation curves
+'''
 
 ## 🔧 Requirements
 
