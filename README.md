@@ -1,4 +1,4 @@
-# 🫁 Pneumonia Detection AI with Explainable Grad-CAM
+# Pneumonia Detection AI with Explainable Grad-CAM
 
 <div align="center">
 
