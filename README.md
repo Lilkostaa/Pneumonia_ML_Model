@@ -63,7 +63,9 @@ Unlike traditional black-box models, this system provides **visual explanations*
 ## 🖼️ Demo
 
 ### Web Interface
-![Web Interface](screenshot/web_interface.png)
+![Web Interface (Home)](screenshot/web_interface_home.png)
+![Web Interface (Image)](screenshot/web_interface_image.png)
+![Web Interface (Home)](screenshot/web_interface_result.png)
 
 ### Grad-CAM Visualization
 ![Grad-CAM Example](examples/gradcam_comparison.png)
@@ -137,25 +139,30 @@ Pneumonia_ML_Model/
 
 ### Step 1: Clone Repository
 
+```
 git clone https://github.com/LilKostaa/Pneumonia_ML_Model.git
 cd Pneumonia_ML_Model
-
+```
 
 ### Step 2: Create Virtual Environment (Recommended)
 
 Windows
+```
 python -m venv venv
 venv\Scripts\activate
+```
 
 Linux/Mac
+```
 python3 -m venv venv
 source venv/bin/activate
-
+```
 
 ### Step 3: Install Dependencies
 
+```
 pip install -r requirements.txt
-
+```
 
 ### Step 4: Configure Kaggle API
 
@@ -175,9 +182,10 @@ pip install -r requirements.txt
 
 **Option C**: Train Your Own Model
 
+```
 python DownloadDataSet.py # Download dataset
 python TrainingModel.py # Train model (~2-3 hours on CPU)
-
+```
 ---
 
 ## 💻 Usage
@@ -186,11 +194,15 @@ python TrainingModel.py # Train model (~2-3 hours on CPU)
 
 **1. Start Flask Server**
 
+```
 python app.py
+```
 
 **2. Open Browser**
 
+```
 http://localhost:5000
+```
 
 **3. Upload & Analyze**
 - **Option A**: Upload chest X-ray image (JPG, PNG)
@@ -210,7 +222,9 @@ http://localhost:5000
 
 #### Predict Single Image
 
+```
 python PredictModel.py
+```
 
 **Output**:
 - Diagnosis prediction (PNEUMONIA/NORMAL)
@@ -219,7 +233,9 @@ python PredictModel.py
 
 #### Evaluate Full Test Set
 
+```
 python EvaluateModel.py
+```
 
 **Output**:
 - Performance metrics (Accuracy, Precision, Recall, etc.)
