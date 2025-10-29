@@ -33,15 +33,15 @@ __pycache__/
 # TRAINED MODELS (TOO LARGE - 500MB+)
 # ============================================
 # These files should be shared via Git LFS or external links
-*.h5
-*.keras
-*.weights.h5
-*.pb
-*.ckpt
-saved_model/
-checkpoints/
-best_*.h5
-pneumonia_*.h5
+#*.h5
+#*.keras
+#*.weights.h5
+#*.pb
+#*.ckpt
+#saved_model/
+#checkpoints/
+#best_*.h5
+#pneumonia_*.h5
 
 # ============================================
 # DATASET & DATA FILES
